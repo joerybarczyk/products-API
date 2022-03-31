@@ -4,5 +4,5 @@ from . import views
 urlpatterns = [
     path('', views.products_list),
     path('<int:product_pk>/', views.product_details),
-    path('<int:product_pk>/reviews/', include('reviews.urls'))
+    
 ]
