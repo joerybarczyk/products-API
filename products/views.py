@@ -1,49 +1,61 @@
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
+# from django.shortcuts import get_object_or_404
+# from rest_framework.response import Response
 # from rest_framework.decorators import api_view
 # from rest_framework.views import APIView
-from rest_framework import mixins
+# from rest_framework import mixins
+# from rest_framework import status
 from rest_framework import generics
-from rest_framework import status
 from .serializers import ProductSerializer
 from .models import Product
-from products import serializers
 
-class ProductList(mixins.ListModelMixin,
-                    mixins.CreateModelMixin,
-                    generics.GenericAPIView):
-    '''
-    List all products, or add a new product instance
-    '''
-
+#   <<CLASS-BASED VIEWS W/ GENERIC VIEWS>>
+class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def get(self, request):
-        return self.list(request)
-
-    def post(self, request):
-        return self.create(request)
-
-class ProductDetail(mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    generics.GenericAPIView):
-    '''
-    Retrieve, update, or delete a product instance
-    '''
-
+class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def get(self, request, pk):
-        return self.retrieve(request, pk)
 
-    def put(self, request, pk):
-        return self.update(request, pk)
 
-    def delete(self, request, pk):
-        return self.delete(request, pk)
+#   <<CLASS-BASED VIEWS W/ MIXINS>>
+#
+# class ProductList(mixins.ListModelMixin,
+#                     mixins.CreateModelMixin,
+#                     generics.GenericAPIView):
+#     '''
+#     List all products, or add a new product instance
+#     '''
+
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+
+#     def get(self, request):
+#         return self.list(request)
+
+#     def post(self, request):
+#         return self.create(request)
+
+# class ProductDetail(mixins.RetrieveModelMixin,
+#                     mixins.UpdateModelMixin,
+#                     mixins.DestroyModelMixin,
+#                     generics.GenericAPIView):
+#     '''
+#     Retrieve, update, or delete a product instance
+#     '''
+
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+
+#     def get(self, request, pk):
+#         return self.retrieve(request, pk)
+
+#     def put(self, request, pk):
+#         return self.update(request, pk)
+
+#     def delete(self, request, pk):
+#         return self.delete(request, pk)
 
 
 

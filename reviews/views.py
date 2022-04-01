@@ -1,55 +1,75 @@
-from django.shortcuts import get_list_or_404, get_object_or_404
+# from django.shortcuts import get_list_or_404, get_object_or_404
 # from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status
 from .serializers import ReviewSerializer
 from .models import Review
+from rest_framework import generics
 
-class ReviewList(APIView):
-    '''
-    List all reviews, or add a new review instance
-    '''
-    def get(self, request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+#   <<CLASS-BASED VIEWS W/ GENERIC VIEWS>>
+class ReviewList(generics.ListCreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
-    def post(self, request):
-        serializer = ReviewSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
-class ReviewDetail(APIView):
-    '''
-    Retrieve, update, or delete a review instance
-    '''
-    def get(self, request, review_pk):
-        review = get_object_or_404(Review, pk=review_pk)
-        serializer = ReviewSerializer(review)
-        return Response(serializer.data)
+class ProductReviewList(generics.ListAPIView):
+    serializer_class = ReviewSerializer
 
-    def put(self, request, review_pk):
-        review = get_object_or_404(Review, pk=review_pk)
-        serializer = ReviewSerializer(review, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        product_id = self.kwargs['product_pk']
+        return Review.objects.filter(product=product_id)
 
-    def delete(self, request, review_pk):
-        review = get_object_or_404(Review, pk=review_pk)
-        review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ProductReviewList(APIView):
-    '''
-    List all reviews of a given product
-    '''
-    def get(self, request, product_pk):
-        reviews = get_list_or_404(Review,product=product_pk)
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+#   <<CLASS-BASED VIEWS>>
+#
+# class ReviewList(APIView):
+#     '''
+#     List all reviews, or add a new review instance
+#     '''
+#     def get(self, request):
+#         reviews = Review.objects.all()
+#         serializer = ReviewSerializer(reviews, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = ReviewSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+# class ReviewDetail(APIView):
+#     '''
+#     Retrieve, update, or delete a review instance
+#     '''
+#     def get(self, request, review_pk):
+#         review = get_object_or_404(Review, pk=review_pk)
+#         serializer = ReviewSerializer(review)
+#         return Response(serializer.data)
+
+#     def put(self, request, review_pk):
+#         review = get_object_or_404(Review, pk=review_pk)
+#         serializer = ReviewSerializer(review, data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def delete(self, request, review_pk):
+#         review = get_object_or_404(Review, pk=review_pk)
+#         review.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# class ProductReviewList(APIView):
+#     '''
+#     List all reviews of a given product
+#     '''
+#     def get(self, request, product_pk):
+#         reviews = get_list_or_404(Review,product=product_pk)
+#         serializer = ReviewSerializer(reviews, many=True)
+#         return Response(serializer.data)
 
 
 #   <<FUNCTION-BASED VIEWS>>
