@@ -1,46 +1,89 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
-from rest_framework.views import APIView
+# from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
 from rest_framework import status
 from .serializers import ProductSerializer
 from .models import Product
+from products import serializers
 
-class ProductList(APIView):
+class ProductList(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    generics.GenericAPIView):
     '''
     List all products, or add a new product instance
     '''
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
     def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+        return self.list(request)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return self.create(request)
 
-class ProductDetail(APIView):
+class ProductDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
     '''
     Retrieve, update, or delete a product instance
     '''
-    def get(self, request, product_pk):
-        product = get_object_or_404(Product, pk=product_pk)
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
 
-    def put(self, request, product_pk):
-        product = get_object_or_404(Product, pk=product_pk)
-        serializer = ProductSerializer(product, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
-    def delete(self, request, product_pk):
-        product = get_object_or_404(Product, pk=product_pk)
-        product.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def get(self, request, pk):
+        return self.retrieve(request, pk)
+
+    def put(self, request, pk):
+        return self.update(request, pk)
+
+    def delete(self, request, pk):
+        return self.delete(request, pk)
+
+
+
+#   <<CLASS-BASED VIEWS>>
+#
+# class ProductList(APIView):
+#     '''
+#     List all products, or add a new product instance
+#     '''
+#     def get(self, request):
+#         products = Product.objects.all()
+#         serializer = ProductSerializer(products, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = ProductSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+# class ProductDetail(APIView):
+#     '''
+#     Retrieve, update, or delete a product instance
+#     '''
+#     def get(self, request, product_pk):
+#         product = get_object_or_404(Product, pk=product_pk)
+#         serializer = ProductSerializer(product)
+#         return Response(serializer.data)
+
+#     def put(self, request, product_pk):
+#         product = get_object_or_404(Product, pk=product_pk)
+#         serializer = ProductSerializer(product, data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def delete(self, request, product_pk):
+#         product = get_object_or_404(Product, pk=product_pk)
+#         product.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 #   <<FUNCTION-BASED VIEWS>>
