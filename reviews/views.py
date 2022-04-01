@@ -6,13 +6,13 @@ from .serializers import ReviewSerializer
 from .models import Review
 
 @api_view(['GET', 'POST'])
-def product_reviews(request, product_pk):
+def reviews_list(request):
 
     if request.method == 'GET':
-        reviews = get_list_or_404(Review,product=product_pk)
-        serializer = ReviewSerializer(reviews, many=True)
+        queryset = Review.objects.all()
+        serializer = ReviewSerializer(queryset, many=True)
         return Response(serializer.data)
-    
+
     elif request.method == 'POST':
         serializer = ReviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -20,7 +20,7 @@ def product_reviews(request, product_pk):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET','PUT','DELETE'])
-def review_details(request, product_pk, review_pk):
+def review_details(request, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
 
     if request.method == 'GET':
@@ -36,3 +36,14 @@ def review_details(request, product_pk, review_pk):
     elif request.method == 'DELETE':
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def product_reviews(request, product_pk):
+
+    if request.method == 'GET':
+        reviews = get_list_or_404(Review,product=product_pk)
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+
