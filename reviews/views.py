@@ -1,8 +1,8 @@
-# from django.shortcuts import get_list_or_404, get_object_or_404
 # from rest_framework.decorators import api_view
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
 # from rest_framework import status
+from django.shortcuts import get_list_or_404
 from .serializers import ReviewSerializer
 from .models import Review
 from rest_framework import generics
@@ -21,7 +21,7 @@ class ProductReviewList(generics.ListAPIView):
 
     def get_queryset(self):
         product_id = self.kwargs['product_pk']
-        return Review.objects.filter(product=product_id)
+        return get_list_or_404(Review, product=product_id)
 
 
 #   <<CLASS-BASED VIEWS>>
